@@ -217,9 +217,64 @@ header{background:var(--ink);padding:0 2rem;display:flex;align-items:center;just
   .wf-row{display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--border)}
   .wf-row:last-child{border-bottom:none}
   .wf-split-row{display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;border-radius:7px;margin-bottom:.3rem;font-size:.82rem}
+
+/* ── PIN LOCK ─────────────────────────────────────────────── */
+#pinOverlay{position:fixed;inset:0;background:linear-gradient(135deg,#1a2a2a 0%,#0d1f1f 100%);
+  z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem}
+#pinBox{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;
+  padding:2.5rem 2.8rem;text-align:center;min-width:300px;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+#pinTitle{color:#fff;font-family:'Playfair Display',serif;font-size:1.6rem;margin-bottom:.3rem}
+#pinSub{color:rgba(255,255,255,.5);font-size:.82rem;margin-bottom:1.6rem;font-family:'Nunito',sans-serif}
+#pinDots{display:flex;gap:.7rem;justify-content:center;margin-bottom:1.6rem}
+.pdot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.3);
+  background:transparent;transition:all .2s}
+.pdot.filled{background:#4db8b0;border-color:#4db8b0;box-shadow:0 0 8px rgba(77,184,176,.5)}
+#pinPad{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;max-width:220px;margin:0 auto}
+.pkey{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);border-radius:12px;
+  color:#fff;font-family:'Nunito',sans-serif;font-size:1.2rem;font-weight:700;padding:.8rem;
+  cursor:pointer;transition:all .15s;user-select:none}
+.pkey:hover{background:rgba(77,184,176,.25);border-color:#4db8b0}
+.pkey:active{transform:scale(.95)}
+.pkey.del{font-size:.9rem;color:rgba(255,255,255,.6)}
+#pinError{color:#ff7b7b;font-size:.78rem;font-family:'Nunito',sans-serif;height:1rem;
+  transition:all .2s;margin-top:-.5rem}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.shake{animation:shake .4s ease}
+#pinSetMode{color:rgba(255,255,255,.4);font-size:.72rem;font-family:'Nunito',sans-serif;margin-top:.8rem}
+
 </style>
 </head>
 <body>
+
+<div id="pinOverlay">
+  <div id="pinBox">
+    <div id="pinTitle">💰 My Dashboard</div>
+    <div id="pinSub" id="pinSub">Enter your PIN to continue</div>
+    <div id="pinDots">
+      <div class="pdot" id="d0"></div>
+      <div class="pdot" id="d1"></div>
+      <div class="pdot" id="d2"></div>
+      <div class="pdot" id="d3"></div>
+    </div>
+    <div id="pinPad">
+      <button class="pkey" onclick="pinKey('1')">1</button>
+      <button class="pkey" onclick="pinKey('2')">2</button>
+      <button class="pkey" onclick="pinKey('3')">3</button>
+      <button class="pkey" onclick="pinKey('4')">4</button>
+      <button class="pkey" onclick="pinKey('5')">5</button>
+      <button class="pkey" onclick="pinKey('6')">6</button>
+      <button class="pkey" onclick="pinKey('7')">7</button>
+      <button class="pkey" onclick="pinKey('8')">8</button>
+      <button class="pkey" onclick="pinKey('9')">9</button>
+      <button class="pkey" style="visibility:hidden"></button>
+      <button class="pkey" onclick="pinKey('0')">0</button>
+      <button class="pkey del" onclick="pinDel()">⌫</button>
+    </div>
+    <div id="pinError"></div>
+    <div id="pinSetMode"></div>
+  </div>
+</div>
+
 <canvas id="confetti-canvas"></canvas>
 <div class="goal-pop" id="goalPop">
   <div class="gp-icon" id="gpIcon">🎉</div>
@@ -2195,6 +2250,103 @@ function renderWindfalls(){
   renderWfLog();
   calcWfSplit();
 }
+
+
+// ── PIN LOCK ──────────────────────────────────────────────────────────
+var PIN_KEY = 'dashboard_pin_v1';
+var pinBuffer = '';
+var pinSetting = false;
+var pinConfirmBuffer = '';
+
+function pinInit() {
+  var stored = localStorage.getItem(PIN_KEY);
+  if (!stored) {
+    pinSetting = true;
+    document.getElementById('pinSub').textContent = 'Create a 4-digit PIN';
+    document.getElementById('pinSetMode').textContent = 'First time setup — choose a PIN you\'ll remember';
+  } else {
+    document.getElementById('pinSub').textContent = 'Enter your PIN to continue';
+  }
+}
+
+function pinUpdateDots() {
+  for (var i = 0; i < 4; i++) {
+    document.getElementById('d'+i).classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+
+function pinKey(k) {
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += k;
+  pinUpdateDots();
+  if (pinBuffer.length === 4) {
+    setTimeout(pinSubmit, 150);
+  }
+}
+
+function pinDel() {
+  if (pinBuffer.length > 0) {
+    pinBuffer = pinBuffer.slice(0, -1);
+    pinUpdateDots();
+    document.getElementById('pinError').textContent = '';
+  }
+}
+
+function pinSubmit() {
+  if (pinSetting) {
+    if (!pinConfirmBuffer) {
+      pinConfirmBuffer = pinBuffer;
+      pinBuffer = '';
+      pinUpdateDots();
+      document.getElementById('pinSub').textContent = 'Confirm your PIN';
+      document.getElementById('pinSetMode').textContent = '';
+    } else {
+      if (pinBuffer === pinConfirmBuffer) {
+        localStorage.setItem(PIN_KEY, pinBuffer);
+        pinUnlock();
+      } else {
+        pinBuffer = ''; pinConfirmBuffer = '';
+        pinUpdateDots();
+        pinShake('PINs didn\'t match — try again');
+        document.getElementById('pinSub').textContent = 'Create a 4-digit PIN';
+        document.getElementById('pinSetMode').textContent = 'First time setup — choose a PIN you\'ll remember';
+      }
+    }
+  } else {
+    var stored = localStorage.getItem(PIN_KEY);
+    if (pinBuffer === stored) {
+      pinUnlock();
+    } else {
+      pinBuffer = '';
+      pinUpdateDots();
+      pinShake('Incorrect PIN');
+    }
+  }
+}
+
+function pinShake(msg) {
+  var box = document.getElementById('pinBox');
+  document.getElementById('pinError').textContent = msg;
+  box.classList.add('shake');
+  setTimeout(function(){ box.classList.remove('shake'); }, 400);
+}
+
+function pinUnlock() {
+  var overlay = document.getElementById('pinOverlay');
+  overlay.style.transition = 'opacity .4s';
+  overlay.style.opacity = '0';
+  setTimeout(function(){ overlay.remove(); }, 400);
+}
+
+// Keyboard support
+document.addEventListener('keydown', function(e) {
+  if (!document.getElementById('pinOverlay')) return;
+  if (e.key >= '0' && e.key <= '9') pinKey(e.key);
+  if (e.key === 'Backspace') pinDel();
+});
+
+pinInit();
+// ── END PIN LOCK ───────────────────────────────────────────────────────
 
 </script>
 </body>
