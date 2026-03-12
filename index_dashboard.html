@@ -739,13 +739,13 @@ var _loaded = load();
 var S = Object.assign({
   currentMonth:'Mar 2026',
   expenses:[],
-  savings:{st:3052.95,lt:0,ally:3769.52,fl:0,bd:0,xm:0},
+  savings:{st:3559.29,lt:0,ally:3769.52,fl:0,bd:0,xm:0},
   overrides:{},
   paid:{}
 }, _loaded);
 // Deep merge savings so defaults aren't lost on shallow merge
 if (_loaded && _loaded.savings) {
-  S.savings = Object.assign({st:3052.95,lt:0,ally:3769.52,fl:0,bd:0,xm:0}, _loaded.savings);
+  S.savings = Object.assign({st:3559.29,lt:0,ally:3769.52,fl:0,bd:0,xm:0}, _loaded.savings);
 }
 // Restore savingsLog from loaded state
 if (_loaded && _loaded.savingsLog) {
@@ -1271,55 +1271,55 @@ var TL=[
     note:'🚀 FNBO $2,200 → ST · $90 buffer kept · CC1+CC2 paid from Ally · Car moved to SoFi auto'},
 
   {m:'Mar 2026',  lbl:'Phase 1 — all systems go · best fun money month',
-    st:500, stT:3552.95, lt:1000, ltT:1130, rmb:130,
+    st:500, stT:3559.29, lt:1000, ltT:1130, rmb:130,
     fl:600, bd:70, xm:60, fun:454,
     note:'✨ $454 fun: ~$120 gas + $334 discretionary · FL padded $200 extra · Ally +$200 extra'},
 
   {m:'Apr 2026',  lbl:'ST paused · LT $825 · Ally $275 · car first auto-pull',
-    st:0,   stT:3552.95, lt:825,  ltT:2085, rmb:130,
+    st:0,   stT:3569.08, lt:825,  ltT:2085, rmb:130,
     fl:350, bd:70, xm:60, fun:327},
 
   {m:'May 2026',  lbl:'ST paused · LT $825 · Ally $275 · building momentum',
-    st:0,   stT:3552.95, lt:825,  ltT:3040, rmb:130,
+    st:0,   stT:3578.89, lt:825,  ltT:3040, rmb:130,
     fl:350, bd:70, xm:60, fun:327},
 
   {m:'Jun 2026',  lbl:'ST paused · LT $825 · Ally $275 · Florida nearly funded',
-    st:0,   stT:3552.95, lt:825,  ltT:3995, rmb:130,
+    st:0,   stT:3588.73, lt:825,  ltT:3995, rmb:130,
     fl:350, bd:70, xm:60, fun:327},
 
   {m:'Jul 2026',  lbl:'Power month — 3 paychecks · FL funded · ST + LT resume · Daycare starts',
-    st:500, stT:4052.95, lt:1000, ltT:5125, rmb:130,
+    st:500, stT:4098.6, lt:1000, ltT:5125, rmb:130,
     fl:350, bd:70, xm:60, fun:1950,
     ms3:true, dc:true, msFl:true},
 
   {m:'Aug 2026',  lbl:'Daycare crunch — birthdays funded · ST+Ally paused',
-    st:0,   stT:4052.95, lt:771,  ltT:6026, rmb:130,
+    st:0,   stT:4109.87, lt:771,  ltT:6026, rmb:130,
     bd:50, xm:60, fun:150,
     dc:true, msBD:true},
 
   {m:'Sep 2026',  lbl:'Daycare crunch — LT only · reimbursements help',
-    st:0,   stT:4052.95, lt:821,  ltT:6977, rmb:130,
+    st:0,   stT:4121.17, lt:821,  ltT:6977, rmb:130,
     xm:60, fun:150, dc:true},
 
   {m:'Oct 2026',  lbl:'Daycare crunch — holding steady',
-    st:0,   stT:4052.95, lt:741,  ltT:7848, rmb:130,
+    st:0,   stT:4132.5, lt:741,  ltT:7848, rmb:130,
     xm:60, fun:150, dc:true},
 
   {m:'Nov 2026',  lbl:'Daycare crunch — almost through it',
-    st:0,   stT:4052.95, lt:821,  ltT:8799, rmb:130,
+    st:0,   stT:4143.86, lt:821,  ltT:8799, rmb:130,
     xm:60, fun:150, dc:true},
 
   {m:'Dec 2026',  lbl:'Christmas funded · NFM ends · ST tops up',
-    st:300, stT:4352.95, lt:1000, ltT:9929, rmb:130,
+    st:300, stT:4455.26, lt:1000, ltT:9929, rmb:130,
     xm:60, fun:0,
     msXM:true},
 
   {m:'Jan 2027',  lbl:'ST tops up · Snowball activated — $1,500/mo to LT',
-    st:500, stT:4852.95, lt:1500, ltT:11559, rmb:130,
+    st:500, stT:4967.51, lt:1500, ltT:11559, rmb:130,
     fun:500, snowball:true},
 
   {m:'Feb 2027',  lbl:'ST hits $5,000 — DONE! 🎉 · LT milestone at $12,500',
-    st:147.05, stT:5000, lt:1293.95, ltT:12500, rmb:0,
+    st:18.83, stT:5000, lt:1293.95, ltT:12500, rmb:0,
     fun:500, msLT:false, msST:true},
   {m:'Mar 2027',  lbl:'Full snowball to LT · ST complete',
     st:0, stT:5000, lt:1500, ltT:14000, rmb:0,
@@ -1633,6 +1633,7 @@ if (!S.savingsLog['st']) S.savingsLog['st'] = [];
 if (S.savingsLog['st'].length === 0) {
   S.savingsLog['st'].push({ id: 1, date: '2026-03-09', amt: 2200, note: 'FNBO seed transfer' });
   S.savingsLog['st'].push({ id: 2, date: '2026-03-12', amt: 852.95, note: 'Emergency fund sweep' });
+  S.savingsLog['st'].push({ id: 3, date: '2026-03-13', amt: 500, note: 'PC1 Mar 13 transfer' });
   save();
 }
 if (!S.savingsLog['lt']) S.savingsLog['lt'] = [];
@@ -2132,7 +2133,7 @@ function setWfType(el){
 }
 
 // Projected savings balances at each month index (0=Mar 2026)
-var WF_ST_PROJ  = [3552.95, 3552.95, 3552.95, 3552.95, 4052.95, 4052.95, 4052.95, 4052.95, 4052.95, 4352.95, 4852.95, 5000];
+var WF_ST_PROJ  = [3559.29, 3569.08, 3578.89, 3588.73, 4098.60, 4109.87, 4121.17, 4132.50, 4143.86, 4455.26, 4967.51, 5000];
 var WF_LT_PROJ  = [1130, 2085, 3040, 3995, 5125, 6026, 6977, 7848, 8799, 9929, 11559, 12500, 14000, 15500, 17000, 18500, 20000, 21500, 23000, 24500, 25000];
 var WF_ST_GOAL  = 5000;
 var WF_LT_GOAL  = 25000;
