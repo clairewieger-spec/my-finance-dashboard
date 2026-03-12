@@ -735,13 +735,22 @@ header{background:var(--ink);padding:0 2rem;display:flex;align-items:center;just
 var SK = 'claire_v10';
 function load(){try{return JSON.parse(localStorage.getItem(SK))||{};}catch(e){return{};}}
 function save(){localStorage.setItem(SK,JSON.stringify(S));}
+var _loaded = load();
 var S = Object.assign({
   currentMonth:'Mar 2026',
   expenses:[],
   savings:{st:3052.95,lt:0,ally:3769.52,fl:0,bd:0,xm:0},
   overrides:{},
   paid:{}
-}, load());
+}, _loaded);
+// Deep merge savings so defaults aren't lost on shallow merge
+if (_loaded && _loaded.savings) {
+  S.savings = Object.assign({st:3052.95,lt:0,ally:3769.52,fl:0,bd:0,xm:0}, _loaded.savings);
+}
+// Restore savingsLog from loaded state
+if (_loaded && _loaded.savingsLog) {
+  S.savingsLog = _loaded.savingsLog;
+}
 
 // ── CONSTANTS ──────────────────────────────────────────────────────────────
 var MONTHS = ['Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026',
@@ -1462,11 +1471,12 @@ function addSavingsEntry(acct) {
   var amtEl = document.getElementById(acct+'AddAmt');
   var dateEl = document.getElementById(acct+'AddDate');
   var noteEl = document.getElementById(acct+'AddNote');
+  if (!amtEl || !dateEl || !noteEl) { toast('Error: input fields not found'); return; }
   var amt = parseFloat(amtEl.value);
   var date = dateEl.value;
   var note = noteEl.value.trim();
   if (!amt || amt <= 0) { toast('Enter an amount!'); return; }
-  if (!date) { toast('Pick a date!'); return; }
+  if (!date) { toast('Pick a date! (use the calendar icon)'); return; }
   if (!S.savingsLog) S.savingsLog = {};
   if (!S.savingsLog[acct]) S.savingsLog[acct] = [];
   S.savingsLog[acct].push({ id: Date.now(), date: date, amt: amt, note: note });
@@ -1609,6 +1619,14 @@ renderPull(S.currentMonth);
 renderSavings();
 renderTimeline();
 renderReimbursements();
+// Pre-fill date inputs with today
+(function() {
+  var today = new Date().toISOString().split('T')[0];
+  var stD = document.getElementById('stAddDate');
+  var ltD = document.getElementById('ltAddDate');
+  if (stD && !stD.value) stD.value = today;
+  if (ltD && !ltD.value) ltD.value = today;
+})();
 // Pre-seed ST log with FNBO + emergency fund sweep (runs once on first load)
 if (!S.savingsLog) S.savingsLog = {};
 if (!S.savingsLog['st']) S.savingsLog['st'] = [];
@@ -1618,9 +1636,11 @@ if (S.savingsLog['st'].length === 0) {
   save();
 }
 if (!S.savingsLog['lt']) S.savingsLog['lt'] = [];
-// Always recompute savings.st from the log so new entries are reflected
-if (S.savingsLog['st'] && S.savingsLog['st'].length) {
-  S.savings.st = S.savingsLog['st'].reduce(function(s,e){ return s + e.amt; }, 0);
+// Recompute savings.st from log only if it hasn't been set yet (first load)
+if (!_loaded || !_loaded.savings || !_loaded.savings.st || _loaded.savings.st <= 0) {
+  if (S.savingsLog['st'] && S.savingsLog['st'].length) {
+    S.savings.st = S.savingsLog['st'].reduce(function(s,e){ return s + e.amt; }, 0);
+  }
 }
 
 // ── EQUITY ────────────────────────────────────────────────────────
