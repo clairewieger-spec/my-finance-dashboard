@@ -249,7 +249,7 @@ header{background:var(--ink);padding:0 2rem;display:flex;align-items:center;just
 <div id="pinOverlay">
   <div id="pinBox">
     <div id="pinTitle">💰 My Dashboard</div>
-    <div id="pinSub" id="pinSub">Enter your PIN to continue</div>
+    <div id="pinSub">Enter your PIN to continue</div>
     <div id="pinDots">
       <div class="pdot" id="d0"></div>
       <div class="pdot" id="d1"></div>
@@ -357,6 +357,25 @@ header{background:var(--ink);padding:0 2rem;display:flex;align-items:center;just
       <div style="display:flex;justify-content:space-between;align-items:center;padding:.8rem 1rem;background:var(--ink);border-radius:11px;margin-top:.85rem;color:#fff;font-weight:700">
         <span>True Fun Money</span>
         <span style="font-family:Playfair Display,serif;font-size:1.25rem;color:#7ecece" id="dFun">—</span>
+      </div>
+      <div style="background:rgba(255,255,255,.06);border-radius:9px;padding:.6rem .9rem;margin-top:.4rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap">
+        <div style="font-size:.72rem;color:rgba(255,255,255,.55);font-family:'Nunito',sans-serif">
+          💳 Pull to FNBO on PC1 · PC2 stays in SoFi for bills
+        </div>
+        <div style="display:flex;gap:1rem">
+          <div style="text-align:center">
+            <div style="font-size:.62rem;color:rgba(255,255,255,.4);font-family:'Nunito',sans-serif">PC1</div>
+            <div style="font-size:.88rem;color:#7ecece;font-family:'Playfair Display',serif;font-weight:700" id="dFunPC1">—</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:.62rem;color:rgba(255,255,255,.4);font-family:'Nunito',sans-serif">PC2 (stays in SoFi)</div>
+            <div style="font-size:.88rem;color:#7ecece;font-family:'Playfair Display',serif;font-weight:700" id="dFunPC2">—</div>
+          </div>
+          <div id="dFunPC3Wrap" style="text-align:center;display:none">
+            <div style="font-size:.62rem;color:rgba(255,255,255,.4);font-family:'Nunito',sans-serif">PC3</div>
+            <div style="font-size:.88rem;color:#7ecece;font-family:'Playfair Display',serif;font-weight:700" id="dFunPC3">—</div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="card">
@@ -1150,6 +1169,27 @@ function renderDashboard(){
   document.getElementById('dGoals').textContent='-'+fmt(goalPulled);
   document.getElementById('dVar').textContent='-'+fmt(vt);
   document.getElementById('dFun').textContent=fmt(fun-vt);
+  // PC split for fun money → personal account (FNBO)
+  // Rule: Pull ALL fun money on PC1 (before big bills hit)
+  //       PC2 stays in SoFi to cover mortgage/car/NFM in early next month
+  //       July (3-PC month): split across PC1 + PC3, PC2 stays for bills
+  var funNet = Math.max(0, fun - vt);
+  var numPCs = p.n;
+  var pc1fun = funNet;  // all fun money on PC1
+  var pc2fun = 0;       // PC2 stays in SoFi for big bills
+  var pc3fun = 0;
+  if (numPCs === 3) {
+    // 3-paycheck month (July): split between PC1 and PC3, PC2 holds for bills
+    pc1fun = Math.round(funNet * 0.5 * 100) / 100;
+    pc3fun = Math.round((funNet - pc1fun) * 100) / 100;
+    pc2fun = 0;
+  }
+  document.getElementById('dFunPC1').textContent = fmt(pc1fun);
+  document.getElementById('dFunPC2').textContent = numPCs >= 2 ? (pc2fun > 0 ? fmt(pc2fun) : '$0 — stays in SoFi') : '—';
+  var pc3wrap = document.getElementById('dFunPC3Wrap');
+  if (pc3wrap) pc3wrap.style.display = numPCs === 3 ? '' : 'none';
+  var pc3el = document.getElementById('dFunPC3');
+  if (pc3el) pc3el.textContent = numPCs === 3 ? fmt(pc3fun) : '—';
 
   var sv=S.savings;
   [['st',5000,'stBar','stMeta','stPct'],['lt',25000,'ltBar','ltMeta','ltPct'],['ally',5000,'allyBar','allyMeta','allyPct']].forEach(function(a){
