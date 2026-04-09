@@ -556,7 +556,7 @@ header{background:var(--ink);padding:0 2rem;display:flex;align-items:center;just
       <div class="br"><div>🎁 Christmas fully funded</div><div style="font-weight:700;color:var(--gold)">Dec 2026</div></div>
       <div class="br"><div>🔁 Snowball kicks in ($1,500/mo to LT)</div><div style="font-weight:700;color:var(--teal)">Jan 2027</div></div>
       <div class="br"><div>💸 Reimbursements accelerate LT by ~1 mo</div><div style="font-weight:700;color:var(--green)">Ongoing</div></div>
-      <div class="br"><div>🏦 Short Term $5,000 complete</div><div style="font-weight:700;color:var(--teal)">Feb 2027</div></div>
+      <div class="br"><div>🏦 Short Term $5,000 complete</div><div style="font-weight:700;color:var(--teal)">Jan 2027</div></div>
       <div class="br"><div>📈 Long Term Savings $25,000 complete</div><div style="font-weight:700;color:var(--gold)">Feb 2027</div></div>
     </div>
   </div>
@@ -758,13 +758,13 @@ var _loaded = load();
 var S = Object.assign({
   currentMonth:'Mar 2026',
   expenses:[],
-  savings:{st:3559.29,lt:0,ally:3769.52,fl:0,bd:0,xm:0},
+  savings:{st:3638.25,lt:1002.78,ally:1841.66,fl:600.27,bd:0,xm:0},
   overrides:{},
   paid:{}
 }, _loaded);
 // Deep merge savings so defaults aren't lost on shallow merge
 if (_loaded && _loaded.savings) {
-  S.savings = Object.assign({st:3559.29,lt:0,ally:3769.52,fl:0,bd:0,xm:0}, _loaded.savings);
+  S.savings = Object.assign({st:3638.25,lt:1002.78,ally:1841.66,fl:600.27,bd:0,xm:0}, _loaded.savings);
 }
 // Restore savingsLog from loaded state
 if (_loaded && _loaded.savingsLog) {
@@ -993,12 +993,40 @@ function renderPull(month){
   if(!p.isCrunch)pc1Total+=getOv(month,'st',p.recST)+getOv(month,'lt',p.recLT);
 
   var carNote=p.mi>=1?'<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .75rem;background:var(--teal-l);border-radius:8px;margin-bottom:.4rem;font-size:.72rem;color:var(--teal)"><span>🚗</span><span><strong>Car $588 auto-pulls from SoFi on the 7th</strong> — no action needed</span></div>':'';
+  // Add fun money to PC1 total and rows
+  var funNet = Math.max(0, fun);
+  var pc1FunAmt = n === 3 ? Math.round(funNet * 0.5 * 100)/100 : funNet;
+  pc1Total += pc1FunAmt;
+
+  // Add CC payoff row for months where CC balance exists (April 2026 only for now)
+  var ccRow = '';
+  if(month === 'Apr 2026') {
+    ccRow = '<div style="display:flex;align-items:center;gap:.6rem;padding:.55rem .3rem;border-bottom:1px solid var(--border)">'
+      +'<div style="width:1.4rem;height:1.4rem"></div>'
+      +'<span style="font-size:1.1rem">💳</span>'
+      +'<div style="flex:1"><div style="font-size:.85rem;font-weight:600;color:var(--ink)">Pay CC Balance <span style="font-size:.68rem;background:#fde8ec;color:#c0394b;border-radius:5px;padding:.1rem .35rem;margin-left:.2rem">Clear it!</span></div>'
+      +'<div style="font-size:.72rem;color:var(--muted)">→ Pay directly to credit card — clears your $434 balance</div></div>'
+      +'<div style="font-size:.9rem;font-weight:700;color:#c0394b">$434.00</div>'
+      +'</div>';
+    pc1Total += 434;
+  }
+
+  // Fun money row for PC1
+  var pc1FunRow = '<div style="display:flex;align-items:center;gap:.6rem;padding:.55rem .3rem;border-bottom:1px solid var(--border)">'
+    +'<div style="width:1.4rem;height:1.4rem"></div>'
+    +'<span style="font-size:1.1rem">🏖️</span>'
+    +'<div style="flex:1"><div style="font-size:.85rem;font-weight:600;color:var(--ink)">Fun Money <span style="font-size:.68rem;background:var(--gold-l);color:#7a5500;border-radius:5px;padding:.1rem .35rem;margin-left:.2rem">Move today!</span></div>'
+    +'<div style="font-size:.72rem;color:var(--muted)">→ Transfer to <strong>FNBO personal account</strong> on PC1 day · PC2 must stay in SoFi for bills</div></div>'
+    +'<div style="font-size:.9rem;font-weight:700;color:var(--gold)">'+fmt(pc1FunAmt)+'</div>'
+    +'</div>';
+
+
   var pc1='<div class="pc-block">'
     +'<div class="pc-header">'
     +'<div class="pc-title"><span style="background:var(--teal);color:#fff;border-radius:6px;padding:.1rem .4rem;font-size:.65rem">PC1</span>'+fmtDate(pcs[0])+'</div>'
     +'<div class="pc-date pc-total">Pull: '+fmt(pc1Total)+'</div>'
     +'</div>'
-    +carNote+pc1Rows+'</div>';
+    +carNote+pc1Rows+ccRow+pc1FunRow+'</div>';
 
   // PC2 block  
   var pc2Rows='';
@@ -1012,12 +1040,29 @@ function renderPull(month){
     +getOv(month,'fl',p.grFL)+getOv(month,'bd',p.grBD)+getOv(month,'xm',p.grXM);
   if(p.isCrunch)pc2Total+=getOv(month,'lt',p.recLT);
 
+  // Build early-next-month bills warning for PC2
+  var nextMonthNames = ['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
+  var nextMoName = nextMonthNames[mi] || 'next month';
+  var earlyBills = 1223.35 + 293.77; // Mortgage + NWM 3rd always
+  var earlyBillsDesc = 'Mortgage $1,223 + NWM $294';
+  if(mi >= 1){ earlyBills += 588; earlyBillsDesc += ' + Car $588'; }
+  if(mi >= 1){ earlyBills += 589.21; earlyBillsDesc += ' + NFM $589'; }
+  earlyBills += 150 + 118 + 184.85; // MUD/OPPD + AmFam + Verizon
+  earlyBillsDesc += ' + utilities/insurance $453';
+
+  var pc2StayNote = '<div style="margin:.4rem 0 .5rem;background:#fdf0f2;border:1px solid #f0b8c0;border-radius:9px;padding:.6rem .8rem;font-size:.74rem;color:#c0394b;line-height:1.65">'
+    +'<strong>⛔ Do NOT move fun money after PC2</strong> — after you do these pulls, leave the rest in SoFi.'
+    +'<br>Early '+nextMoName+' auto-bills hit before your next paycheck: '+earlyBillsDesc+' = ~'+fmt(earlyBills)+'.'
+    +'</div>';
+
+
   var pc2='<div class="pc-block">'
     +'<div class="pc-header">'
     +'<div class="pc-title"><span style="background:var(--gold);color:#fff;border-radius:6px;padding:.1rem .4rem;font-size:.65rem">PC2</span>'+fmtDate(pcs[1])+'</div>'
     +'<div class="pc-date pc-total">Pull: '+fmt(pc2Total)+'</div>'
     +'</div>'
     +(pc2Rows||'<div style="font-size:.78rem;color:var(--muted);padding:.35rem .25rem">All savings paused this paycheck — daycare month</div>')
+    +pc2StayNote
     +'</div>';
 
   // PC3 (July only)
@@ -1049,7 +1094,7 @@ function renderPull(month){
   }
   var funRow='<div class="fun-row">'
     +'<div><div class="fun-lbl">🎉 True Fun Money this month</div>'
-    +'<div style="font-size:.68rem;color:var(--muted)">After auto-bills, savings (ST/LT/Ally) & spending goals — truly yours</div></div>'
+    +'<div style="font-size:.68rem;color:var(--muted)">Move to <strong>FNBO personal account on PC1 day</strong> · after auto-bills, savings &amp; goals</div></div>'
     +'<div class="fun-val" style="color:'+funColor+'">'+fmt(fun)+'</div>'
     +'</div>'+tightNote;
 
@@ -1311,20 +1356,20 @@ var TL=[
     note:'🚀 FNBO $2,200 → ST · $90 buffer kept · CC1+CC2 paid from Ally · Car moved to SoFi auto'},
 
   {m:'Mar 2026',  lbl:'Phase 1 — all systems go · best fun money month',
-    st:500, stT:3559.29, lt:1000, ltT:1130, rmb:130,
+    st:500, stT:3559.29, lt:1000, ltT:1002.78, rmb:130,
     fl:600, bd:70, xm:60, fun:454,
     note:'✨ $454 fun: ~$120 gas + $334 discretionary · FL padded $200 extra · Ally +$200 extra'},
 
   {m:'Apr 2026',  lbl:'ST paused · LT $825 · Ally $275 · car first auto-pull',
-    st:0,   stT:3569.08, lt:825,  ltT:2085, rmb:130,
+    st:0,   stT:3648.26, lt:825,  ltT:1830.54, rmb:130,
     fl:350, bd:70, xm:60, fun:327},
 
   {m:'May 2026',  lbl:'ST paused · LT $825 · Ally $275 · building momentum',
-    st:0,   stT:3578.89, lt:825,  ltT:3040, rmb:130,
+    st:0,   stT:3658.29, lt:825,  ltT:3040, rmb:130,
     fl:350, bd:70, xm:60, fun:327},
 
   {m:'Jun 2026',  lbl:'ST paused · LT $825 · Ally $275 · Florida nearly funded',
-    st:0,   stT:3588.73, lt:825,  ltT:3995, rmb:130,
+    st:0,   stT:3668.35, lt:825,  ltT:3995, rmb:130,
     fl:350, bd:70, xm:60, fun:327},
 
   {m:'Jul 2026',  lbl:'Power month — 3 paychecks · FL funded · ST + LT resume · Daycare starts',
@@ -1333,12 +1378,12 @@ var TL=[
     ms3:true, dc:true, msFl:true},
 
   {m:'Aug 2026',  lbl:'Daycare crunch — birthdays funded · ST+Ally paused',
-    st:0,   stT:4109.87, lt:771,  ltT:6026, rmb:130,
+    st:0,   stT:4189.93, lt:771,  ltT:6026, rmb:130,
     bd:50, xm:60, fun:150,
     dc:true, msBD:true},
 
   {m:'Sep 2026',  lbl:'Daycare crunch — LT only · reimbursements help',
-    st:0,   stT:4121.17, lt:821,  ltT:6977, rmb:130,
+    st:0,   stT:4201.45, lt:821,  ltT:6977, rmb:130,
     xm:60, fun:150, dc:true},
 
   {m:'Oct 2026',  lbl:'Daycare crunch — holding steady',
@@ -1346,23 +1391,23 @@ var TL=[
     xm:60, fun:150, dc:true},
 
   {m:'Nov 2026',  lbl:'Daycare crunch — almost through it',
-    st:0,   stT:4143.86, lt:821,  ltT:8799, rmb:130,
+    st:0,   stT:4224.59, lt:821,  ltT:8799, rmb:130,
     xm:60, fun:150, dc:true},
 
   {m:'Dec 2026',  lbl:'Christmas funded · NFM ends · ST tops up',
-    st:300, stT:4455.26, lt:1000, ltT:9929, rmb:130,
+    st:300, stT:4536.21, lt:1000, ltT:8740.4, rmb:130,
     xm:60, fun:0,
     msXM:true},
 
   {m:'Jan 2027',  lbl:'ST tops up · Snowball activated — $1,500/mo to LT',
-    st:500, stT:4967.51, lt:1500, ltT:11559, rmb:130,
+    st:500, stT:5000.0, lt:1500, ltT:10264.44, rmb:130,
     fun:500, snowball:true},
 
   {m:'Feb 2027',  lbl:'ST hits $5,000 — DONE! 🎉 · LT milestone at $12,500',
-    st:18.83, stT:5000, lt:1293.95, ltT:12500, rmb:0,
+    st:18.83, stT:5000, lt:1293.95, ltT:11792.67, rmb:0,
     fun:500, msLT:false, msST:true},
   {m:'Mar 2027',  lbl:'Full snowball to LT · ST complete',
-    st:0, stT:5000, lt:1500, ltT:14000, rmb:0,
+    st:0, stT:5000, lt:1500, ltT:13325.1, rmb:0,
     fun:600},
   {m:'Apr 2027',  lbl:'LT building — $11,000 to go',
     st:0, stT:5000, lt:1500, ltT:15500, rmb:0, fun:600},
@@ -2173,8 +2218,8 @@ function setWfType(el){
 }
 
 // Projected savings balances at each month index (0=Mar 2026)
-var WF_ST_PROJ  = [3559.29, 3569.08, 3578.89, 3588.73, 4098.60, 4109.87, 4121.17, 4132.50, 4143.86, 4455.26, 4967.51, 5000];
-var WF_LT_PROJ  = [1130, 2085, 3040, 3995, 5125, 6026, 6977, 7848, 8799, 9929, 11559, 12500, 14000, 15500, 17000, 18500, 20000, 21500, 23000, 24500, 25000];
+var WF_ST_PROJ  = [3638.25, 3648.26, 3658.29, 3668.35, 4178.44, 4189.93, 4201.45, 4213.0, 4224.59, 4536.21, 5000.0, 5013.75];
+var WF_LT_PROJ  = [1002.78, 1830.54, 2660.57, 3492.89, 4502.5, 5285.88, 6121.42, 6879.25, 7719.17, 8740.4, 10264.44, 11792.67];
 var WF_ST_GOAL  = 5000;
 var WF_LT_GOAL  = 25000;
 
