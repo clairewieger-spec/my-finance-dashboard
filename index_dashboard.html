@@ -842,7 +842,7 @@ function getAutoBills(month){
   var b=1223.35+75+881.32+75+118+146.35+38.50+250+cleanerCount(month)*80;
   if(mi>=1)b+=588; // Car payment — SoFi auto 7th
   if(mi>=1)b+=589.21;
-  if(mi>=4)b+=876.00;
+  // Daycare ($876) covered from pre-funded SoFi bucket — not deducted from fun money
   return b;
 }
 
@@ -989,8 +989,18 @@ function renderPull(month){
     pc1Rows+=makeRow(month,'st','🏦','Short Term Savings','→ ST account · '+fmtS(p.recST)+' recommended','sav',p.recST,null,false);
     pc1Rows+=makeRow(month,'lt','📈','Long Term Savings','→ Investment account · '+fmtS(p.recLT)+' recommended','sav',p.recLT,null,false);
   }
+  // Daycare savings bucket — starting July, move $876 to SoFi daycare bucket each PC1
+  if(p.mi >= 4) {
+    pc1Rows += '<div style="display:flex;align-items:center;gap:.6rem;padding:.55rem .3rem;border-bottom:1px solid var(--border)">'
+      +'<span style="font-size:1.1rem">👶</span>'
+      +'<div style="flex:1"><div style="font-size:.85rem;font-weight:600;color:var(--ink)">Daycare Savings Bucket <span style="font-size:.68rem;background:#fde8f5;color:#8a006a;border-radius:5px;padding:.1rem .35rem;margin-left:.2rem">Replenish</span></div>'
+      +'<div style="font-size:.72rem;color:var(--muted)">→ SoFi daycare savings bucket · Building next year\'s fund</div></div>'
+      +'<div style="font-size:.9rem;font-weight:700;color:#8a006a">$876.00</div>'
+      +'</div>';
+  }
   var pc1Total=getOv(month,'subs',p.subs);
   if(!p.isCrunch)pc1Total+=getOv(month,'st',p.recST)+getOv(month,'lt',p.recLT);
+  // Daycare bucket transfer shown as reminder only — not counted in pull total
 
   var carNote=p.mi>=1?'<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .75rem;background:var(--teal-l);border-radius:8px;margin-bottom:.4rem;font-size:.72rem;color:var(--teal)"><span>🚗</span><span><strong>Car $588 auto-pulls from SoFi on the 7th</strong> — no action needed</span></div>':'';
   // Add fun money to PC1 total and rows
@@ -1129,7 +1139,7 @@ function renderPull(month){
     +'<div class="sofi-item"><div class="sofi-lbl">Verizon + T-Mobile</div><div class="sofi-val">$184.85</div></div>'
     +'<div class="sofi-item"><div class="sofi-lbl">Groceries (est)</div><div class="sofi-val">$250.00</div></div>'
     +(mi>=1?'<div class="sofi-item"><div class="sofi-lbl">NFM Furniture</div><div class="sofi-val">$589.21</div></div>':'')
-    +(mi>=4?'<div class="sofi-item"><div class="sofi-lbl">Daycare</div><div class="sofi-val">$876.00</div></div>':'')
+    +(mi>=4?'<div class="sofi-item"><div class="sofi-lbl">Daycare (from bucket)</div><div class="sofi-val">$876.00</div></div>':'')
     +'<div class="sofi-item"><div class="sofi-lbl">Cleaners ('+cleanerCount(month)+'x biweekly)</div><div class="sofi-val">'+fmt(cleanAmt)+'</div></div>'
     +'<div class="sofi-item" style="background:rgba(255,255,255,.15)"><div class="sofi-lbl">Total Auto</div><div class="sofi-val" style="color:#ffc955">'+fmt(p.auto)+'</div></div>'
     +'</div></div>';
