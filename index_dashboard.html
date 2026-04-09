@@ -554,7 +554,7 @@ header{background:var(--ink);padding:0 2rem;display:flex;align-items:center;just
       <div class="br"><div>👶 Daycare starts</div><div style="font-weight:700;color:var(--rose)">Jul 2026</div></div>
       <div class="br"><div>🎂 Birthdays fully funded</div><div style="font-weight:700;color:var(--purple)">Aug 2026</div></div>
       <div class="br"><div>🎁 Christmas fully funded</div><div style="font-weight:700;color:var(--gold)">Dec 2026</div></div>
-      <div class="br"><div>🔁 Snowball kicks in ($1,500/mo to LT)</div><div style="font-weight:700;color:var(--teal)">Jan 2027</div></div>
+      <div class="br"><div>🔁 Snowball kicks in ($1,500/mo to LT)</div><div style="font-weight:700;color:var(--teal)">Jul 2026</div></div>
       <div class="br"><div>💸 Reimbursements accelerate LT by ~1 mo</div><div style="font-weight:700;color:var(--green)">Ongoing</div></div>
       <div class="br"><div>🏦 Short Term $5,000 complete</div><div style="font-weight:700;color:var(--teal)">Jan 2027</div></div>
       <div class="br"><div>📈 Long Term Savings $25,000 complete</div><div style="font-weight:700;color:var(--gold)">Feb 2027</div></div>
@@ -1068,13 +1068,31 @@ function renderPull(month){
   // PC3 (July only)
   var pc3='';
   if(n===3){
+    var pc3STamt = 850;
+    var pc3LTamt = Math.round((DEF_GROSS - pc3STamt) * 0.6 / 50) * 50;
+    var pc3Fun   = Math.round((DEF_GROSS - pc3STamt - pc3LTamt) * 100) / 100;
     pc3='<div class="pc-block" style="background:linear-gradient(135deg,var(--gold-l),#fff8dc);border-color:#e0c050">'
       +'<div class="pc-header">'
-      +'<div class="pc-title"><span style="background:var(--purple);color:#fff;border-radius:6px;padding:.1rem .4rem;font-size:.65rem">PC3</span>'+fmtDate(pcs[2])+' ⭐ Bonus</div>'
-      +'<div class="pc-date pc-total" style="color:var(--gold)">'+fmt(DEF_GROSS)+' extra</div>'
+      +'<div class="pc-title"><span style="background:var(--purple);color:#fff;border-radius:6px;padding:.1rem .4rem;font-size:.65rem">PC3</span>'+fmtDate(pcs[2])+' ⭐ Bonus paycheck</div>'
+      +'<div class="pc-date pc-total" style="color:var(--gold)">'+fmt(DEF_GROSS)+'</div>'
       +'</div>'
-      +'<div style="font-size:.82rem;color:#8a6000;line-height:1.65;padding:.1rem .25rem">'
-      +'This is your <strong>bonus paycheck</strong> — fun money is already '+fmt(fun)+'+ this month. Consider putting some toward ST savings or Ally to accelerate. The rest is yours!'
+      +'<div style="display:flex;align-items:center;gap:.6rem;padding:.55rem .3rem;border-bottom:1px solid #e0d090">'
+      +'<span style="font-size:1.1rem">🏦</span>'
+      +'<div style="flex:1"><div style="font-size:.85rem;font-weight:600;color:var(--ink)">Short Term Savings <span style="font-size:.68rem;background:#d4f0e8;color:#1a6040;border-radius:5px;padding:.1rem .35rem;margin-left:.2rem">🎉 Fully funded!</span></div>'
+      +'<div style="font-size:.72rem;color:var(--muted)">→ ST account · This closes your $5,000 goal for good — no more ST pulls ever!</div></div>'
+      +'<div style="font-size:.9rem;font-weight:700;color:var(--teal)">$850.00</div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:.6rem;padding:.55rem .3rem;border-bottom:1px solid #e0d090">'
+      +'<span style="font-size:1.1rem">📈</span>'
+      +'<div style="flex:1"><div style="font-size:.85rem;font-weight:600;color:var(--ink)">Long Term Savings</div>'
+      +'<div style="font-size:.72rem;color:var(--muted)">→ Investment account · Head start before daycare crunch</div></div>'
+      +'<div style="font-size:.9rem;font-weight:700;color:var(--purple)">'+fmt(pc3LTamt)+'</div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:.6rem;padding:.55rem .3rem">'
+      +'<span style="font-size:1.1rem">🏖️</span>'
+      +'<div style="flex:1"><div style="font-size:.85rem;font-weight:600;color:var(--ink)">Fun Money <span style="font-size:.68rem;background:var(--gold-l);color:#7a5500;border-radius:5px;padding:.1rem .35rem;margin-left:.2rem">Move to FNBO!</span></div>'
+      +'<div style="font-size:.72rem;color:var(--muted)">→ FNBO personal account · You earned it!</div></div>'
+      +'<div style="font-size:.9rem;font-weight:700;color:var(--gold)">'+fmt(pc3Fun)+'</div>'
       +'</div>'
       +'</div>';
   }
@@ -1372,55 +1390,55 @@ var TL=[
     st:0,   stT:3668.35, lt:825,  ltT:3995, rmb:130,
     fl:350, bd:70, xm:60, fun:327},
 
-  {m:'Jul 2026',  lbl:'Power month — 3 paychecks · FL funded · ST + LT resume · Daycare starts',
+  {m:'Jul 2026',  lbl:'Power month — 3 paychecks · ST fully funded 🎉 · Daycare starts · LT snowball begins',
     st:500, stT:4098.6, lt:1000, ltT:5125, rmb:130,
     fl:350, bd:70, xm:60, fun:1950,
     ms3:true, dc:true, msFl:true},
 
-  {m:'Aug 2026',  lbl:'Daycare crunch — birthdays funded · ST+Ally paused',
-    st:0,   stT:4189.93, lt:771,  ltT:6026, rmb:130,
+  {m:'Aug 2026',  lbl:'Daycare crunch · ST done · LT snowball +$500/mo',
+    st:0,   stT:4189.93, lt:1271, ltT:5785.88, rmb:130,
     bd:50, xm:60, fun:150,
     dc:true, msBD:true},
 
-  {m:'Sep 2026',  lbl:'Daycare crunch — LT only · reimbursements help',
-    st:0,   stT:4201.45, lt:821,  ltT:6977, rmb:130,
+  {m:'Sep 2026',  lbl:'Daycare crunch · LT snowball continues',
+    st:0,   stT:4201.45, lt:1321, ltT:7122.79, rmb:130,
     xm:60, fun:150, dc:true},
 
-  {m:'Oct 2026',  lbl:'Daycare crunch — holding steady',
-    st:0,   stT:4132.5, lt:741,  ltT:7848, rmb:130,
+  {m:'Oct 2026',  lbl:'Daycare crunch · LT snowball continues',
+    st:0,   stT:4132.5, lt:1241, ltT:8383.38, rmb:130,
     xm:60, fun:150, dc:true},
 
-  {m:'Nov 2026',  lbl:'Daycare crunch — almost through it',
-    st:0,   stT:4224.59, lt:821,  ltT:8799, rmb:130,
+  {m:'Nov 2026',  lbl:'Daycare crunch almost over · LT snowball continues',
+    st:0,   stT:4224.59, lt:1321, ltT:9727.43, rmb:130,
     xm:60, fun:150, dc:true},
 
   {m:'Dec 2026',  lbl:'Christmas funded · NFM ends · ST tops up',
-    st:300, stT:4536.21, lt:1000, ltT:8740.4, rmb:130,
+    st:300, stT:4536.21, lt:1000, ltT:11254.18, rmb:130,
     xm:60, fun:0,
     msXM:true},
 
   {m:'Jan 2027',  lbl:'ST tops up · Snowball activated — $1,500/mo to LT',
-    st:500, stT:5000.0, lt:1500, ltT:10264.44, rmb:130,
+    st:500, stT:5000.0, lt:1500, ltT:12785.13, rmb:130,
     fun:500, snowball:true},
 
   {m:'Feb 2027',  lbl:'ST hits $5,000 — DONE! 🎉 · LT milestone at $12,500',
-    st:18.83, stT:5000, lt:1293.95, ltT:11792.67, rmb:0,
+    st:18.83, stT:5000, lt:1293.95, ltT:14320.29, rmb:0,
     fun:500, msLT:false, msST:true},
   {m:'Mar 2027',  lbl:'Full snowball to LT · ST complete',
-    st:0, stT:5000, lt:1500, ltT:13325.1, rmb:0,
+    st:0, stT:5000, lt:1500, ltT:15859.67, rmb:0,
     fun:600},
   {m:'Apr 2027',  lbl:'LT building — $11,000 to go',
-    st:0, stT:5000, lt:1500, ltT:15500, rmb:0, fun:600},
+    st:0, stT:5000, lt:1500, ltT:17403.28, rmb:0, fun:600},
   {m:'May 2027',  lbl:'LT building — $9,500 to go',
-    st:0, stT:5000, lt:1500, ltT:17000, rmb:0, fun:600},
+    st:0, stT:5000, lt:1500, ltT:18951.14, rmb:0, fun:600},
   {m:'Jun 2027',  lbl:'LT past halfway to $25K!',
-    st:0, stT:5000, lt:1500, ltT:18500, rmb:0, fun:600},
+    st:0, stT:5000, lt:1500, ltT:20503.26, rmb:0, fun:600},
   {m:'Jul 2027',  lbl:'3-paycheck month ⭐ · LT surge to $20K',
-    st:0, stT:5000, lt:1500, ltT:20000, rmb:0, fun:600},
+    st:0, stT:5000, lt:1500, ltT:22059.64, rmb:0, fun:600},
   {m:'Aug 2027',  lbl:'LT on track — $5,000 to go',
-    st:0, stT:5000, lt:1500, ltT:21500, rmb:0, fun:600},
+    st:0, stT:5000, lt:1500, ltT:23620.3, rmb:0, fun:600},
   {m:'Sep 2027',  lbl:'LT on track — $3,500 to go',
-    st:0, stT:5000, lt:1500, ltT:23000, rmb:0, fun:600},
+    st:0, stT:5000, lt:1500, ltT:25185.26, rmb:0, fun:600},
   {m:'Oct 2027',  lbl:'Almost there — $1,500 to go!',
     st:0, stT:5000, lt:1500, ltT:24500, rmb:0, fun:600},
   {m:'Nov 2027',  lbl:'LT $25,000 — DONE! 🎉🎉',
@@ -2218,8 +2236,8 @@ function setWfType(el){
 }
 
 // Projected savings balances at each month index (0=Mar 2026)
-var WF_ST_PROJ  = [3638.25, 3648.26, 3658.29, 3668.35, 4178.44, 4189.93, 4201.45, 4213.0, 4224.59, 4536.21, 5000.0, 5013.75];
-var WF_LT_PROJ  = [1002.78, 1830.54, 2660.57, 3492.89, 4502.5, 5285.88, 6121.42, 6879.25, 7719.17, 8740.4, 10264.44, 11792.67];
+var WF_ST_PROJ  = [3638.25, 3648.26, 3658.29, 3668.35, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000];
+var WF_LT_PROJ  = [1002.78, 1830.54, 2660.57, 3492.89, 4502.5, 5785.88, 7122.79, 8383.38, 9727.43, 11254.18, 12785.13, 14320.29];
 var WF_ST_GOAL  = 5000;
 var WF_LT_GOAL  = 25000;
 
